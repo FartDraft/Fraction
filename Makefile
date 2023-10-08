@@ -5,14 +5,16 @@ INC_DIR := ./inc
 
 CXX := g++
 CXXFLAGS := -O0 -g -Werror -Wall -Wextra -std=c++20
-LDFLAGS :=
+LDFLAGS := -lgtest -lgtest_main
 CPPFLAGS := -I$(SRC_DIR)/$(INC_DIR) -MMD -MP
 
 SRCS := $(wildcard $(SRC_DIR)/*.cc)
 OBJS := $(SRCS:$(SRC_DIR)/%.cc=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
+# Valgrind
 VALGRIND_FLAGS := --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose
+
 .PHONY: all clean run valgrind
 
 all: $(BUILD_DIR)/$(TARGET_EXEC)

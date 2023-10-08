@@ -1,64 +1,48 @@
 #include "inc/Fraction.hh"
 
 Fraction::ull_t
-Fraction::gcd(ull_t a, ull_t b) {
+Fraction::gcd(ull_t a, ull_t b) const {
+    if (a == 0) {
+        return b;
+    }
     if (b == 0) {
         return a;
     }
     return a < b ? gcd(a, b % a) : gcd(b, a % b);
 }
 
-Fraction::Fraction(ull_t number, ull_t numerator, ull_t denominator, bool minus) {
+Fraction::Fraction(ull_t number, ull_t numerator, ull_t denominator, bool sign) {
     if (denominator == 0) {
-        std::cerr << "Denominator may not be 0." << std::endl;
+        std::cerr << "Denominator may not be 0!" << std::endl;
         exit(EXIT_FAILURE);
     }
-    if (numerator == 0) {
-        // Fix?
-        Fraction(number, minus);
-    } else {
-        this->minus = minus;
-        this->number = number;
-        if (numerator > denominator) {
-            this->number += numerator / denominator;
-            numerator %= denominator;
-        }
-        ull_t gcd_ = gcd(numerator, denominator);
-        this->numerator = numerator / gcd_;
-        this->denominator = denominator / gcd_;
+    this->sign = sign;
+    if (numerator > denominator) {
+        number += numerator / denominator;
+        numerator %= denominator;
     }
-}
-
-Fraction::Fraction(ld_t fraction) {
-    if (fraction < 0) {
-        this->minus = true;
-    }
-    this->number = static_cast<int>(fraction);
-    ull_t numerator = (fraction - this->number) * this->precision;
-    ull_t gcd_ = gcd(numerator, this->precision);
+    this->number = number;
+    ull_t gcd_ = gcd(numerator, denominator);
     this->numerator = numerator / gcd_;
-    this->denominator = this->precision / gcd_;
+    this->denominator = denominator / gcd_;
 }
 
-std::ostream&
-operator<<(std::ostream& os, const Fraction& fraction) {
-    if (fraction.numerator == 0) {
-        os << '0';
-    } else {
-        if (fraction.minus) {
-            os << '-';
-        }
-        if (fraction.number != 0) {
-            os << fraction.number << ' ';
-        }
-        os << fraction.numerator << '/' << fraction.denominator;
-    }
-    return os;
+Fraction::ull_t
+Fraction::get_number() const {
+    return this->number;
 }
 
-std::istream&
-operator>>(std::istream& is, Fraction& fraction) {
-    // TODO: In string and then Fraction(string)
-    is >> fraction.number >> fraction.numerator >> fraction.denominator;
-    return is;
+Fraction::ull_t
+Fraction::get_numerator() const {
+    return this->numerator;
+}
+
+Fraction::ull_t
+Fraction::get_denominator() const {
+    return this->denominator;
+}
+
+bool
+Fraction::get_sign() const {
+    return this->sign;
 }
