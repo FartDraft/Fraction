@@ -27,6 +27,13 @@ Fraction::Fraction(ull_t number, ull_t numerator, ull_t denominator, bool sign) 
     this->denominator = denominator / gcd_;
 }
 
+Fraction::Fraction(const Fraction& fraction) {
+    this->number = fraction.number;
+    this->numerator = fraction.numerator;
+    this->denominator = fraction.denominator;
+    this->sign = fraction.sign;
+}
+
 Fraction::ull_t
 Fraction::get_number() const {
     return this->number;

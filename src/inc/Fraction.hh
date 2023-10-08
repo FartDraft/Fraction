@@ -8,7 +8,7 @@ class Fraction {
     typedef long double ld_t;
 
     explicit Fraction(ull_t number = 0, ull_t numerator = 0, ull_t denominator = 1, bool sign = false);
-    // explicit Fraction(ull_t number = 0, ull_t numerator = 0, ull_t denominator = 1, bool sign = false);
+    explicit Fraction(const Fraction& fraction);
     // explicit Fraction(ld_t fraction);
     // explicit Fraction(std::string fraction);
 

@@ -24,6 +24,16 @@ TEST(ManualConstructor, FractionReduce) {
     ASSERT_EQ(fraction.get_sign(), true);
 }
 
+TEST(FromFractionConstructor, IsEqual) {
+    Fraction fraction0(3, 11, 5, true);
+    Fraction fraction(fraction0);
+
+    ASSERT_EQ(fraction.get_number(), 5);
+    ASSERT_EQ(fraction.get_numerator(), 1);
+    ASSERT_EQ(fraction.get_denominator(), 5);
+    ASSERT_EQ(fraction.get_sign(), true);
+}
+
 int
 main(int argc, char** argv) {
 
