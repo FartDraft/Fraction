@@ -4,22 +4,27 @@
 
 class Fraction {
   public:
-    typedef unsigned long long ull_t;
-    typedef long double ld_t;
-
-    explicit Fraction(ull_t number = 0, ull_t numerator = 0, ull_t denominator = 1, bool sign = false);
+    explicit Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
+                      bool sign = false);
     explicit Fraction(const Fraction& fraction);
-    // explicit Fraction(ld_t fraction);
+    explicit Fraction(double fraction, unsigned long long precision);
     // explicit Fraction(std::string fraction);
 
-    ull_t get_number() const;
-    ull_t get_numerator() const;
-    ull_t get_denominator() const;
+    unsigned long long get_number() const;
+    unsigned long long get_numerator() const;
+    unsigned long long get_denominator() const;
     bool get_sign() const;
 
   private:
-    ull_t number, numerator, denominator;
+    unsigned long long number, numerator, denominator;
     bool sign;
 
-    ull_t gcd(ull_t a, ull_t b) const;
+    /**
+     * @brief Computes the greatest common divisor (GCD) of two numbers.
+     *
+     * @param a The first number.
+     * @param b The second number.
+     * @return The greatest common divisor of the input numbers.
+     */
+    unsigned long long gcd(unsigned long long a, unsigned long long b) const;
 };
