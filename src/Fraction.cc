@@ -34,21 +34,6 @@ Fraction::Fraction(const Fraction& fraction) {
     this->sign = fraction.sign;
 }
 
-// Fraction::Fraction(double fraction, unsigned long long precision) {
-//     if (precision == 0) {
-//         std::cerr << "Precision may not be 0!" << std::endl;
-//         exit(EXIT_FAILURE);
-//     }
-//     if (fraction < 0) {
-//         this->sign = true;
-//     }
-//     this->number = static_cast<int>(fraction);
-//     unsigned long long numerator = (fraction - this->number) * precision;
-//     unsigned long long gcd_ = gcd(numerator, precision);
-//     this->numerator = numerator / gcd_;
-//     this->denominator = precision / gcd_;
-// }
-
 unsigned long long
 Fraction::get_number() const {
     return this->number;

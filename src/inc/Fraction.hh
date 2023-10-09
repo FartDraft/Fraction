@@ -7,7 +7,6 @@ class Fraction {
     explicit Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
                       bool sign = false);
     explicit Fraction(const Fraction& fraction);
-    explicit Fraction(double fraction, unsigned long long precision);
     // explicit Fraction(std::string fraction);
 
     unsigned long long get_number() const;
