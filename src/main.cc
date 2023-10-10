@@ -3,6 +3,15 @@
 #include "inc/Fraction.hh"
 
 // Constructors
+TEST(EmptyConstructor, _) {
+    Fraction fraction;
+
+    ASSERT_EQ(fraction.get_number(), 0);
+    ASSERT_EQ(fraction.get_numerator(), 0);
+    ASSERT_EQ(fraction.get_denominator(), 1);
+    ASSERT_EQ(fraction.get_sign(), false);
+}
+
 TEST(ManualConstructor, DenominatorEquals0) {
     ASSERT_DEATH({ Fraction fraction(3, 11, 0); }, "Denominator may not be 0!");
 }

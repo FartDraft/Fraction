@@ -1,14 +1,10 @@
 #include "inc/Fraction.hh"
 
-unsigned long long
-Fraction::gcd(unsigned long long a, unsigned long long b) const {
-    if (a == 0llU) {
-        return b;
-    }
-    if (b == 0llU) {
-        return a;
-    }
-    return a < b ? gcd(a, b % a) : gcd(b, a % b);
+Fraction::Fraction() {
+    this->sign = false;
+    this->number = 0llU;
+    this->numerator = 0llU;
+    this->denominator = 1llU;
 }
 
 Fraction::Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator, bool sign) {
@@ -22,7 +18,7 @@ Fraction::Fraction(unsigned long long number, unsigned long long numerator, unsi
         numerator %= denominator;
     }
     this->number = number;
-    unsigned long long gcd_ = gcd(numerator, denominator);
+    unsigned long long gcd_ = std::gcd(numerator, denominator);
     this->numerator = numerator / gcd_;
     this->denominator = denominator / gcd_;
 }
@@ -110,7 +106,7 @@ Fraction::Fraction(std::string fraction) {
         numerator %= denominator;
     }
     this->number = number;
-    unsigned long long gcd_ = gcd(numerator, denominator);
+    unsigned long long gcd_ = std::gcd(numerator, denominator);
     this->numerator = numerator / gcd_;
     this->denominator = denominator / gcd_;
 }
