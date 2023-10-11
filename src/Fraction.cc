@@ -1,16 +1,18 @@
 #include "inc/Fraction.hh"
 
+using namespace fraction;
+
 Fraction::Fraction() { this->zero(); }
+
+Fraction::Fraction(const Fraction& fraction) { this->copy(fraction); }
 
 Fraction::Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator, bool sign) {
     this->assign(number, numerator, denominator, sign);
 }
 
-Fraction::Fraction(const Fraction& fraction) { this->copy(fraction); }
+Fraction::Fraction(double fraction, double err) { this->from_double(fraction, err); }
 
 Fraction::Fraction(const std::string& fraction) { this->from_string(fraction); }
-
-Fraction::Fraction(double fraction, double err) { this->from_double(fraction, err); }
 
 const Fraction&
 Fraction::zero() {
@@ -23,9 +25,19 @@ Fraction::zero() {
 }
 
 const Fraction&
+Fraction::copy(const Fraction& fraction) {
+    this->_number = fraction._number;
+    this->_numerator = fraction._numerator;
+    this->_denominator = fraction._denominator;
+    this->_sign = fraction._sign;
+
+    return *this;
+}
+
+const Fraction&
 Fraction::assign(unsigned long long number, unsigned long long numerator, unsigned long long denominator, bool sign) {
     if (denominator == 0llU) {
-        std::cerr << "Denominator may not be 0!" << std::endl;
+        std::cerr << __PRETTY_FUNCTION__ << " : denominator may not be 0!" << std::endl;
         exit(EXIT_FAILURE);
     }
     this->_sign = sign;
@@ -42,13 +54,28 @@ Fraction::assign(unsigned long long number, unsigned long long numerator, unsign
 }
 
 const Fraction&
-Fraction::copy(const Fraction& fraction) {
-    this->_number = fraction._number;
-    this->_numerator = fraction._numerator;
-    this->_denominator = fraction._denominator;
-    this->_sign = fraction._sign;
+Fraction::from_double(double fraction, double err) {
+    unsigned long long numerator, denominator;
+    double sign = fraction < 0 ? -1.0 : 1.0, g = std::abs(fraction);
+    unsigned long long s, a = 0, b = 1, c = 1, d = 0;
+    unsigned int iter = 0;
+    do {
+        s = std::floor(g);
+        numerator = a + s * c;
+        denominator = b + s * d;
+        a = c;
+        b = d;
+        c = numerator;
+        d = denominator;
+        g = 1.0 / (g - s);
+        if (err > std::abs(sign * numerator / denominator - fraction)) {
+            this->assign(0, numerator, denominator, fraction < 0);
+            return *this;
+        }
+    } while (iter++ < 1e6);
 
-    return *this;
+    std::cerr << __PRETTY_FUNCTION__ << " : failed to find a fraction for " << fraction << std::endl;
+    exit(EXIT_FAILURE);
 }
 
 const Fraction&
@@ -123,31 +150,6 @@ Fraction::from_string(const std::string& fraction) {
     pcre2_code_free(regex);
 
     return *this;
-}
-
-const Fraction&
-Fraction::from_double(double fraction, double err) {
-    unsigned long long numerator, denominator;
-    double sign = fraction < 0 ? -1.0 : 1.0, g = std::abs(fraction);
-    unsigned long long s, a = 0, b = 1, c = 1, d = 0;
-    unsigned int iter = 0;
-    do {
-        s = std::floor(g);
-        numerator = a + s * c;
-        denominator = b + s * d;
-        a = c;
-        b = d;
-        c = numerator;
-        d = denominator;
-        g = 1.0 / (g - s);
-        if (err > std::abs(sign * numerator / denominator - fraction)) {
-            this->assign(0, numerator, denominator, fraction < 0);
-            return *this;
-        }
-    } while (iter++ < 1e6);
-
-    std::cerr << __PRETTY_FUNCTION__ << ": failed to find a fraction for " << fraction << std::endl;
-    exit(EXIT_FAILURE);
 }
 
 unsigned long long

@@ -6,21 +6,28 @@
 #include <pcre2.h>
 #include <string>
 
+namespace fraction {
+
 class Fraction {
   public:
     explicit Fraction();
+    explicit Fraction(const Fraction& fraction);
     explicit Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
                       bool sign = false);
-    explicit Fraction(const Fraction& fraction);
-    explicit Fraction(const std::string& fraction);
     explicit Fraction(double fraction, double err = 1e-10);
+    explicit Fraction(const std::string& fraction);
 
     const Fraction& zero();
+    const Fraction& copy(const Fraction& fraction);
     const Fraction& assign(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
                            bool sign = false);
-    const Fraction& copy(const Fraction& fraction);
-    const Fraction& from_string(const std::string& fraction);
     const Fraction& from_double(double fraction, double err = 1e-10);
+    const Fraction& from_string(const std::string& fraction);
+
+    // to_double
+    // to_string
+
+    friend constexpr int cmp(const Fraction& a, const Fraction& b);
 
     unsigned long long number() const;
     unsigned long long numerator() const;
@@ -31,3 +38,31 @@ class Fraction {
     unsigned long long _number, _numerator, _denominator;
     bool _sign;
 };
+
+constexpr int
+cmp(const Fraction& a, const Fraction& b) {
+    if (a._sign and not b._sign) {
+        return -1;
+    }
+    if (not a._sign and b._sign) {
+        return 1;
+    }
+    if (a._number < b._number) {
+        return -1;
+    }
+    if (a._number > b._number) {
+        return 1;
+    }
+    unsigned long long denominator = std::lcm(a._denominator, b._denominator);
+    unsigned long long a_numerator = a._numerator * (denominator / a._denominator);
+    unsigned long long b_numerator = b._numerator * (denominator / b._denominator);
+    if (a_numerator < b_numerator) {
+        return -1;
+    }
+    if (a_numerator > b_numerator) {
+        return 1;
+    }
+    return 0;
+}
+
+} // namespace fraction

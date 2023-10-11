@@ -2,6 +2,8 @@
 #include <gtest/gtest.h>
 #include "inc/Fraction.hh"
 
+using namespace fraction;
+
 // Constructors
 TEST(EmptyConstructor, _) {
     Fraction fraction;
@@ -12,8 +14,18 @@ TEST(EmptyConstructor, _) {
     ASSERT_EQ(fraction.sign(), false);
 }
 
+TEST(FromSelfConstructor, _) {
+    Fraction fraction0(3, 11, 5);
+    Fraction fraction(fraction0);
+
+    ASSERT_EQ(fraction.number(), 5);
+    ASSERT_EQ(fraction.numerator(), 1);
+    ASSERT_EQ(fraction.denominator(), 5);
+    ASSERT_EQ(fraction.sign(), false);
+}
+
 TEST(ManualConstructor, DenominatorEquals0) {
-    ASSERT_DEATH({ Fraction fraction(3, 11, 0); }, "Denominator may not be 0!");
+    ASSERT_DEATH({ Fraction fraction(3, 11, 0); }, "denominator may not be 0!");
 }
 
 TEST(ManualConstructor, NumeratorEquals0) {
@@ -32,16 +44,6 @@ TEST(ManualConstructor, FractionReduce) {
     ASSERT_EQ(fraction.numerator(), 1);
     ASSERT_EQ(fraction.denominator(), 5);
     ASSERT_EQ(fraction.sign(), true);
-}
-
-TEST(FromFractionConstructor, IsEqual) {
-    Fraction fraction0(3, 11, 5);
-    Fraction fraction(fraction0);
-
-    ASSERT_EQ(fraction.number(), 5);
-    ASSERT_EQ(fraction.numerator(), 1);
-    ASSERT_EQ(fraction.denominator(), 5);
-    ASSERT_EQ(fraction.sign(), false);
 }
 
 TEST(FromDoubleConstructor, Pi) {
@@ -133,6 +135,50 @@ TEST(FromStringConstructor, OnlySign) {
 
 TEST(FromStringConstructor, Empty) {
     ASSERT_DEATH({ Fraction fraction(""); }, "Does not match pattern");
+}
+
+//
+TEST(Cmp, Equal0) {
+    Fraction a;
+    Fraction b;
+
+    ASSERT_EQ(cmp(a, b), 0);
+}
+
+TEST(Cmp, Equal) {
+    Fraction a(3, 11, 5);
+    Fraction b(5, 1, 5);
+
+    ASSERT_EQ(cmp(a, b), 0);
+}
+
+TEST(Cmp, LessMinus) {
+    Fraction a(3, 0, 1, true);
+    Fraction b(3);
+
+    ASSERT_EQ(cmp(a, b), -1);
+}
+
+TEST(Cmp, Less) {
+    Fraction a(2.71);
+    Fraction b(3.14);
+
+    ASSERT_EQ(cmp(a, b), -1);
+}
+
+TEST(Cmp, GreaterMinus) {
+    Fraction a("-5 119/130");
+    Fraction b("0 1/2");
+
+    ASSERT_EQ(cmp(a, b), 1);
+}
+
+// Change to double once you implement from string (double)
+TEST(Cmp, Greater) {
+    Fraction b("0 1/2");
+    Fraction a("5 119/130");
+
+    ASSERT_EQ(cmp(a, b), 1);
 }
 
 int
