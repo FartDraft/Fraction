@@ -4,7 +4,7 @@ SRC_DIR := ./src
 INC_DIR := ./inc
 
 CXX := g++
-CXXFLAGS := -O0 -g -Werror -Wall -Wextra -std=c++20
+CXXFLAGS := -O0 -g -Werror -Wall -Wextra -std=c++17
 LDFLAGS := -lgtest -lgtest_main -lpcre2-8
 CPPFLAGS := -I$(SRC_DIR)/$(INC_DIR) -MMD -MP
 

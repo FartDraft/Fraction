@@ -1,37 +1,58 @@
 #include "inc/Fraction.hh"
 
-Fraction::Fraction() {
-    this->sign = false;
-    this->number = 0llU;
-    this->numerator = 0llU;
-    this->denominator = 1llU;
-}
+Fraction::Fraction() { this->zero(); }
 
 Fraction::Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator, bool sign) {
+    this->assign(number, numerator, denominator, sign);
+}
+
+Fraction::Fraction(const Fraction& fraction) { this->copy(fraction); }
+
+Fraction::Fraction(const std::string& fraction) { this->from_string(fraction); }
+
+const Fraction&
+Fraction::zero() {
+    this->_sign = false;
+    this->_number = 0llU;
+    this->_numerator = 0llU;
+    this->_denominator = 1llU;
+
+    return *this;
+}
+
+const Fraction&
+Fraction::assign(unsigned long long number, unsigned long long numerator, unsigned long long denominator, bool sign) {
     if (denominator == 0llU) {
         std::cerr << "Denominator may not be 0!" << std::endl;
         exit(EXIT_FAILURE);
     }
-    this->sign = sign;
+    this->_sign = sign;
     if (numerator > denominator) {
         number += numerator / denominator;
         numerator %= denominator;
     }
-    this->number = number;
+    this->_number = number;
     unsigned long long gcd_ = std::gcd(numerator, denominator);
-    this->numerator = numerator / gcd_;
-    this->denominator = denominator / gcd_;
+    this->_numerator = numerator / gcd_;
+    this->_denominator = denominator / gcd_;
+
+    return *this;
 }
 
-Fraction::Fraction(const Fraction& fraction) {
-    this->number = fraction.number;
-    this->numerator = fraction.numerator;
-    this->denominator = fraction.denominator;
-    this->sign = fraction.sign;
+const Fraction&
+Fraction::copy(const Fraction& fraction) {
+    this->_number = fraction._number;
+    this->_numerator = fraction._numerator;
+    this->_denominator = fraction._denominator;
+    this->_sign = fraction._sign;
+
+    return *this;
 }
 
-Fraction::Fraction(std::string fraction) {
+const Fraction&
+Fraction::from_string(const std::string& fraction) {
     unsigned long long number = 0llU, numerator = 0llU, denominator = 1llU; // Default values
+    bool sign;
     PCRE2_SPTR subject = (PCRE2_SPTR)fraction.c_str();
 
     int error_code;
@@ -90,43 +111,34 @@ Fraction::Fraction(std::string fraction) {
     // sign
     pcre2_substring_get_bynumber(match_data, 1, &result, &result_len);
     if (result_len == 1) {
-        this->sign = ('-' == result[0]);
+        sign = ('-' == result[0]);
         pcre2_substring_free(result);
     }
+
+    this->assign(number, numerator, denominator, sign);
 
     pcre2_match_data_free(match_data);
     pcre2_code_free(regex);
 
-    if (denominator == 0llU) {
-        std::cerr << "Denominator may not be 0!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    if (numerator > denominator) {
-        number += numerator / denominator;
-        numerator %= denominator;
-    }
-    this->number = number;
-    unsigned long long gcd_ = std::gcd(numerator, denominator);
-    this->numerator = numerator / gcd_;
-    this->denominator = denominator / gcd_;
+    return *this;
 }
 
 unsigned long long
-Fraction::get_number() const {
-    return this->number;
+Fraction::number() const {
+    return this->_number;
 }
 
 unsigned long long
-Fraction::get_numerator() const {
-    return this->numerator;
+Fraction::numerator() const {
+    return this->_numerator;
 }
 
 unsigned long long
-Fraction::get_denominator() const {
-    return this->denominator;
+Fraction::denominator() const {
+    return this->_denominator;
 }
 
 bool
-Fraction::get_sign() const {
-    return this->sign;
+Fraction::sign() const {
+    return this->_sign;
 }
