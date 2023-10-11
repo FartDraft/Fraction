@@ -44,6 +44,62 @@ TEST(FromFractionConstructor, IsEqual) {
     ASSERT_EQ(fraction.sign(), false);
 }
 
+TEST(FromDoubleConstructor, Pi) {
+    double d = 3.14159;
+    Fraction fraction(d);
+
+    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
+                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
+}
+
+TEST(FromDoubleConstructor, E) {
+    double d = -2.71828;
+    Fraction fraction(d);
+
+    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
+                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
+}
+
+TEST(FromDoubleConstructor, _1_10) {
+    double d = 1.0 / 10;
+    Fraction fraction(d);
+
+    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
+                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
+}
+
+TEST(FromDoubleConstructor, _1_3) {
+    double d = 1.0 / 3;
+    Fraction fraction(d);
+
+    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
+                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
+}
+
+TEST(FromDoubleConstructor, _2_7) {
+    double d = 2.0 / 7;
+    Fraction fraction(d);
+
+    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
+                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
+}
+
+TEST(FromDoubleConstructor, Int) {
+    double d = 5;
+    Fraction fraction(d);
+
+    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
+                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
+}
+
+TEST(FromDoubleConstructor, Zero) {
+    double d = 0;
+    Fraction fraction(d);
+
+    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
+                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
+}
+
 TEST(FromStringConstructor, Full) {
     Fraction fraction("-3 11/5");
 
