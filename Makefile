@@ -13,7 +13,8 @@ OBJS := $(SRCS:$(SRC_DIR)/%.cc=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
 # Valgrind
-VALGRIND_FLAGS := --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose
+VALGRIND_FILE := valgrind.txt
+VALGRIND_FLAGS := --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=$(VALGRIND_FILE)
 
 .PHONY: all clean run valgrind
 
@@ -28,11 +29,13 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 
 clean:
 	rm -r $(BUILD_DIR)
+	rm $(VALGRIND_FILE)
 
 run:
 	@$(BUILD_DIR)/$(TARGET_EXEC)
 
 valgrind:
 	valgrind $(VALGRIND_FLAGS) $(BUILD_DIR)/$(TARGET_EXEC)
+	nvim $(VALGRIND_FILE)
 
 -include $(DEPS)

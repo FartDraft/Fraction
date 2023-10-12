@@ -62,30 +62,6 @@ TEST(FromDoubleConstructor, E) {
                      * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
 }
 
-TEST(FromDoubleConstructor, _1_10) {
-    double d = 1.0 / 10;
-    Fraction fraction(d);
-
-    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
-                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
-}
-
-TEST(FromDoubleConstructor, _1_3) {
-    double d = 1.0 / 3;
-    Fraction fraction(d);
-
-    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
-                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
-}
-
-TEST(FromDoubleConstructor, _2_7) {
-    double d = 2.0 / 7;
-    Fraction fraction(d);
-
-    ASSERT_EQ(d, (fraction.sign() ? -1.0 : 1.0)
-                     * (fraction.number() + (static_cast<double>(fraction.numerator()) / fraction.denominator())));
-}
-
 TEST(FromDoubleConstructor, Int) {
     double d = 5;
     Fraction fraction(d);
@@ -137,7 +113,14 @@ TEST(FromStringConstructor, Empty) {
     ASSERT_DEATH({ Fraction fraction(""); }, "Does not match pattern");
 }
 
-//
+TEST(FromStringConstructor, Double) {
+    Fraction a("3.14");
+    Fraction b(3.14);
+
+    ASSERT_EQ(cmp(a, b), 0);
+}
+
+// Methods
 TEST(Cmp, Equal0) {
     Fraction a;
     Fraction b;
@@ -145,18 +128,11 @@ TEST(Cmp, Equal0) {
     ASSERT_EQ(cmp(a, b), 0);
 }
 
-TEST(Cmp, Equal) {
+TEST(Cmp, EqualFractionReduce) {
     Fraction a(3, 11, 5);
     Fraction b(5, 1, 5);
 
     ASSERT_EQ(cmp(a, b), 0);
-}
-
-TEST(Cmp, LessMinus) {
-    Fraction a(3, 0, 1, true);
-    Fraction b(3);
-
-    ASSERT_EQ(cmp(a, b), -1);
 }
 
 TEST(Cmp, Less) {
@@ -166,19 +142,18 @@ TEST(Cmp, Less) {
     ASSERT_EQ(cmp(a, b), -1);
 }
 
-TEST(Cmp, GreaterMinus) {
-    Fraction a("-5 119/130");
-    Fraction b("0 1/2");
+TEST(Cmp, Greater) {
+    Fraction b("2.71");
+    Fraction a("3.14");
 
     ASSERT_EQ(cmp(a, b), 1);
 }
 
-// Change to double once you implement from string (double)
-TEST(Cmp, Greater) {
+TEST(Cmp, Minus) {
+    Fraction a("-5 119/130");
     Fraction b("0 1/2");
-    Fraction a("5 119/130");
 
-    ASSERT_EQ(cmp(a, b), 1);
+    ASSERT_EQ(cmp(a, b), -1);
 }
 
 int

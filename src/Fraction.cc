@@ -80,15 +80,17 @@ Fraction::from_double(double fraction, double err) {
 
 const Fraction&
 Fraction::from_string(const std::string& fraction) {
-    unsigned long long number = 0llU, numerator = 0llU, denominator = 1llU; // Default values
-    bool sign;
+    // Default values
+    unsigned long long number = 0llU, numerator = 0llU, denominator = 1llU;
+    bool sign = false;
     PCRE2_SPTR subject = (PCRE2_SPTR)fraction.c_str();
 
     int error_code;
     PCRE2_SIZE error_offset;
-    const char regex_str[] = "([+-])?(?:(?:(\\d+) (\\d+)\\/(\\d+))|(?:(\\d+)\\/(\\d+))|(\\d+))";
+    const char regex_str[] = "([+-])?(?:(?:(\\d+) (\\d+)\\/(\\d+))|(?:(\\d+)\\/(\\d+))|(\\d+)|(\\d*\\.\\d*))";
     PCRE2_SPTR pattern = (PCRE2_SPTR)regex_str;
-    pcre2_code* regex = pcre2_compile(pattern, PCRE2_ZERO_TERMINATED, PCRE2_ANCHORED, &error_code, &error_offset, NULL);
+    pcre2_code* regex = pcre2_compile(pattern, PCRE2_ZERO_TERMINATED, PCRE2_ANCHORED | PCRE2_ENDANCHORED, &error_code,
+                                      &error_offset, NULL);
     if (regex == NULL) {
         PCRE2_UCHAR buffer[256];
         pcre2_get_error_message(error_code, buffer, sizeof(buffer));
@@ -100,6 +102,7 @@ Fraction::from_string(const std::string& fraction) {
     int group_count = pcre2_match(regex, subject, PCRE2_ZERO_TERMINATED, 0, PCRE2_NOTEMPTY, match_data, NULL);
     PCRE2_UCHAR* result;
     PCRE2_SIZE result_len;
+    double real = -1.0;
     switch (group_count) {
         // number numerator/denominator
         case 5:
@@ -131,24 +134,36 @@ Fraction::from_string(const std::string& fraction) {
             number = std::stoull(std::string(result, result + result_len));
             pcre2_substring_free(result);
             break;
+        // real
+        case 9:
+            pcre2_substring_get_bynumber(match_data, 8, &result, &result_len);
+            if (result_len == 1) { // Dot only
+                goto match_error;
+            }
+            real = std::stod(std::string(result, result + result_len));
+            pcre2_substring_free(result);
+            break;
         default:
-            std::cerr << "String: " << fraction << std::endl;
-            std::cerr << "Does not match pattern: " << regex_str << std::endl;
+        match_error:
+            std::cerr << __PRETTY_FUNCTION__ << " : string: " << fraction << std::endl;
+            std::cerr << "Does not match pattern: r" << '"' << regex_str << '"' << std::endl;
             exit(EXIT_FAILURE);
             break;
     }
     // sign
-    pcre2_substring_get_bynumber(match_data, 1, &result, &result_len);
-    if (result_len == 1) {
+    if (pcre2_substring_get_bynumber(match_data, 1, &result, &result_len) != PCRE2_ERROR_UNSET) {
         sign = ('-' == result[0]);
         pcre2_substring_free(result);
     }
 
-    this->assign(number, numerator, denominator, sign);
+    if (real == -1.0) {
+        this->assign(number, numerator, denominator, sign);
+    } else {
+        this->from_double(real);
+    }
 
     pcre2_match_data_free(match_data);
     pcre2_code_free(regex);
-
     return *this;
 }
 
