@@ -49,6 +49,21 @@ class Fraction {
                                         : std::to_string(this->_numerator) + "/" + std::to_string(this->_denominator));
     }
 
+    // Stream
+    friend std::ostream&
+    operator<<(std::ostream& os, const Fraction& obj) {
+        os << std::string(obj);
+        return os;
+    }
+
+    friend std::istream&
+    operator>>(std::istream& is, Fraction& obj) {
+        std::string input;
+        is >> input;
+        obj.from_string(input);
+        return is;
+    }
+
     // Comparison Fraction
     friend constexpr int cmp(const Fraction& a, const Fraction& b);
 
