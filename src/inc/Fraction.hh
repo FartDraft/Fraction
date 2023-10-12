@@ -16,6 +16,7 @@ class Fraction {
     explicit Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
                       bool sign = false);
     explicit Fraction(double fraction, double err = 1e-10);
+    // Pattern: r"([+-])?(?:(?:(\d+) (\d+)\/(\d+))|(?:(\d+)\/(\d+))|(\d+)|(\d*\.\d*))"
     explicit Fraction(const std::string& fraction);
 
     // Setters
@@ -24,10 +25,29 @@ class Fraction {
     const Fraction& assign(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
                            bool sign = false);
     const Fraction& from_double(double fraction, double err = 1e-10);
+    // Pattern: r"([+-])?(?:(?:(\d+) (\d+)\/(\d+))|(?:(\d+)\/(\d+))|(\d+)|(\d*\.\d*))"
     const Fraction& from_string(const std::string& fraction);
 
-    // to_double
-    // to_string
+    // Cast
+    constexpr
+    operator unsigned long long() const {
+        return static_cast<unsigned long long>(this->_number);
+    }
+
+    constexpr
+    operator double() const {
+        return (this->_sign ? -1.0 : 1.0)
+               * (static_cast<double>(this->_number)
+                  + static_cast<double>(this->_numerator) / static_cast<double>(this->_denominator));
+    }
+
+    operator std::string() const {
+        // Pattern: r"-?(\d+ \d+/\d+|\d+/\d+|\d+)"
+        return (this->_sign ? "-" : "") + (this->_number == 0 ? "" : std::to_string(this->_number))
+               + (this->_number == 0 or this->_numerator == 0 ? "" : " ")
+               + (this->_numerator == 0 ? ""
+                                        : std::to_string(this->_numerator) + "/" + std::to_string(this->_denominator));
+    }
 
     // Comparison Fraction
     friend constexpr int cmp(const Fraction& a, const Fraction& b);

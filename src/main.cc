@@ -199,6 +199,41 @@ TEST(Operator, IntEqual) {
     ASSERT_EQ(a == b, true);
 }
 
+TEST(Cast, Int) {
+    Fraction a(5);
+    unsigned long long b = a;
+
+    ASSERT_EQ(b, 5);
+}
+
+TEST(Cast, Double) {
+    Fraction a(-3.15);
+    double b = a;
+
+    ASSERT_EQ(b, -3.15);
+}
+
+TEST(Cast, StringFull) {
+    Fraction a("3 3/15");
+    std::string b = a;
+
+    ASSERT_EQ(b, "3 1/5");
+}
+
+TEST(Cast, StringOnlyFraction) {
+    Fraction a("-3/15");
+    std::string b = a;
+
+    ASSERT_EQ(b, "-1/5");
+}
+
+TEST(Cast, StringOnlyNumber) {
+    Fraction a("-3");
+    std::string b = a;
+
+    ASSERT_EQ(b, "-3");
+}
+
 int
 main(int argc, char** argv) {
 
