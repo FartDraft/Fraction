@@ -143,8 +143,8 @@ TEST(Cmp, Less) {
 }
 
 TEST(Cmp, Greater) {
-    Fraction b("2.71");
     Fraction a("3.14");
+    Fraction b("2.71");
 
     ASSERT_EQ(cmp(a, b), 1);
 }
@@ -154,6 +154,49 @@ TEST(Cmp, Minus) {
     Fraction b("0 1/2");
 
     ASSERT_EQ(cmp(a, b), -1);
+}
+
+TEST(Cmp, EqualInt) {
+    Fraction a;
+    int b = 0;
+
+    ASSERT_EQ(cmp(a, b), 0);
+}
+
+TEST(Cmp, LessInt) {
+    Fraction a("-17");
+    double b = 0.333;
+
+    ASSERT_EQ(cmp(a, b), -1);
+}
+
+TEST(Cmp, GreaterInt) {
+    Fraction a(0.1);
+    unsigned long b = 0;
+
+    ASSERT_EQ(cmp(a, b), 1);
+}
+
+// Operators
+TEST(Operator, Equal) {
+    Fraction a;
+    Fraction b;
+
+    ASSERT_EQ(a == b, true);
+}
+
+TEST(Operator, EqualInt) {
+    Fraction a(3, 0, 1);
+    int b = 3;
+
+    ASSERT_EQ(a == b, true);
+}
+
+TEST(Operator, IntEqual) {
+    int a = 3;
+    Fraction b(3, 0, 1);
+
+    ASSERT_EQ(a == b, true);
 }
 
 int
