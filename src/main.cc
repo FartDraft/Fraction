@@ -121,6 +121,7 @@ TEST(FromStringConstructor, Double) {
 }
 
 // Methods
+// Cmp
 TEST(Cmp, Equal0) {
     Fraction a;
     Fraction b;
@@ -178,6 +179,7 @@ TEST(Cmp, GreaterInt) {
 }
 
 // Operators
+// Comparison
 TEST(Operator, Equal) {
     Fraction a;
     Fraction b;
@@ -197,6 +199,35 @@ TEST(Operator, IntEqual) {
     Fraction b(3, 0, 1);
 
     ASSERT_EQ(a == b, true);
+}
+
+// Cast
+TEST(Cast, Bool0) {
+    Fraction a(0);
+    bool b = a;
+
+    ASSERT_EQ(b, false);
+}
+
+TEST(Cast, BoolFractionOnly) {
+    Fraction a(0, 1, 3);
+    bool b = a;
+
+    ASSERT_EQ(b, true);
+}
+
+TEST(Cast, BoolNumberOnly) {
+    Fraction a(3);
+    bool b = a;
+
+    ASSERT_EQ(b, true);
+}
+
+TEST(Cast, BoolOperator) {
+    Fraction a(3);
+    Fraction b(0);
+
+    ASSERT_EQ(a and b, false);
 }
 
 TEST(Cast, Int) {

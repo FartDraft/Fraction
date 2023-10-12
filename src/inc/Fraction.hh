@@ -30,6 +30,11 @@ class Fraction {
 
     // Cast
     constexpr
+    operator bool() const {
+        return this->_number != 0 or this->_numerator != 0;
+    }
+
+    constexpr
     operator unsigned long long() const {
         return static_cast<unsigned long long>(this->_number);
     }

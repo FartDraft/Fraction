@@ -147,6 +147,9 @@ Fraction::from_string(const std::string& fraction) {
         match_error:
             std::cerr << __PRETTY_FUNCTION__ << " : string: " << fraction << std::endl;
             std::cerr << "Does not match pattern: r" << '"' << regex_str << '"' << std::endl;
+
+            pcre2_match_data_free(match_data);
+            pcre2_code_free(regex);
             exit(EXIT_FAILURE);
             break;
     }
