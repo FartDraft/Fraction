@@ -11,17 +11,43 @@ namespace fraction {
 class Fraction {
   public:
     // Constructors
-    explicit Fraction();
-    explicit Fraction(const Fraction& fraction);
+    explicit Fraction() : _number(0llU), _numerator(0llU), _denominator(1llU), _sign(false) {}
+
+    explicit Fraction(const Fraction& fraction)
+        : _number(fraction._number), _numerator(fraction._numerator), _denominator(fraction._denominator),
+          _sign(fraction._sign) {}
+
     explicit Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
-                      bool sign = false);
-    explicit Fraction(double fraction, double err = 1e-10);
+                      bool sign = false) {
+        this->assign(number, numerator, denominator, sign);
+    }
+
+    explicit Fraction(double fraction, double err = 1e-10) { this->from_double(fraction, err); }
+
     // Pattern: r"([+-])?(?:(?:(\d+) (\d+)\/(\d+))|(?:(\d+)\/(\d+))|(\d+)|(\d*\.\d*))"
-    explicit Fraction(const std::string& fraction);
+    explicit Fraction(const std::string& fraction) { this->from_string(fraction); }
 
     // Setters
-    const Fraction& zero();
-    const Fraction& copy(const Fraction& fraction);
+    constexpr const Fraction&
+    zero() {
+        this->_sign = false;
+        this->_number = 0llU;
+        this->_numerator = 0llU;
+        this->_denominator = 1llU;
+
+        return *this;
+    }
+
+    constexpr const Fraction&
+    copy(const Fraction& fraction) {
+        this->_number = fraction._number;
+        this->_numerator = fraction._numerator;
+        this->_denominator = fraction._denominator;
+        this->_sign = fraction._sign;
+
+        return *this;
+    }
+
     const Fraction& assign(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
                            bool sign = false);
     const Fraction& from_double(double fraction, double err = 1e-10);
@@ -32,11 +58,6 @@ class Fraction {
     constexpr
     operator bool() const {
         return this->_number != 0 or this->_numerator != 0;
-    }
-
-    constexpr
-    operator unsigned long long() const {
-        return static_cast<unsigned long long>(this->_number);
     }
 
     constexpr
@@ -52,6 +73,22 @@ class Fraction {
                + (this->_number == 0 or this->_numerator == 0 ? "" : " ")
                + (this->_numerator == 0 ? ""
                                         : std::to_string(this->_numerator) + "/" + std::to_string(this->_denominator));
+    }
+
+    // Assignment
+    Fraction& operator=(const Fraction& other) = default;
+    Fraction& operator=(Fraction&& other) = default;
+
+    Fraction&
+    operator=(double fraction) {
+        this->from_double(fraction);
+        return *this;
+    }
+
+    Fraction&
+    operator=(const std::string& fraction) {
+        this->from_string(fraction);
+        return *this;
     }
 
     // Stream
@@ -70,7 +107,31 @@ class Fraction {
     }
 
     // Comparison Fraction
-    friend constexpr int cmp(const Fraction& a, const Fraction& b);
+    friend constexpr int
+    cmp(const Fraction& a, const Fraction& b) {
+        if (a._sign and not b._sign) {
+            return -1;
+        }
+        if (not a._sign and b._sign) {
+            return 1;
+        }
+        if (a._number < b._number) {
+            return -1;
+        }
+        if (a._number > b._number) {
+            return 1;
+        }
+        unsigned long long denominator = std::lcm(a._denominator, b._denominator);
+        unsigned long long a_numerator = a._numerator * (denominator / a._denominator);
+        unsigned long long b_numerator = b._numerator * (denominator / b._denominator);
+        if (a_numerator < b_numerator) {
+            return -1;
+        }
+        if (a_numerator > b_numerator) {
+            return 1;
+        }
+        return 0;
+    }
 
     friend constexpr bool
     operator==(const Fraction& lhs, const Fraction& rhs) {
@@ -104,9 +165,33 @@ class Fraction {
 
     // Comparison Integer
     template <typename I>
-    friend constexpr int cmp(const Fraction& a, const I& b);
+    friend constexpr int
+    cmp(const Fraction& a, const I& b) {
+        if (a._sign and b > 0) {
+            return -1;
+        }
+        if (not a._sign and b < 0) {
+            return 1;
+        }
+        unsigned long long a_int = a._number;
+        unsigned long long b_int = b;
+        if (a_int < b_int) {
+            return -1;
+        }
+        if (a_int > b_int) {
+            return 1;
+        }
+        if (a._numerator != 0) {
+            return 1;
+        }
+        return 0;
+    }
+
     template <typename I>
-    friend constexpr int cmp(const I& b, const Fraction& a);
+    friend constexpr int
+    cmp(const I& b, const Fraction& a) {
+        return cmp(a, b);
+    }
 
     template <typename I>
     friend constexpr bool
@@ -181,69 +266,29 @@ class Fraction {
     }
 
     // Getters
-    unsigned long long number() const;
-    unsigned long long numerator() const;
-    unsigned long long denominator() const;
-    bool sign() const;
+    constexpr unsigned long long
+    number() const {
+        return this->_number;
+    }
+
+    constexpr unsigned long long
+    numerator() const {
+        return this->_numerator;
+    }
+
+    constexpr unsigned long long
+    denominator() const {
+        return this->_denominator;
+    }
+
+    constexpr bool
+    sign() const {
+        return this->_sign;
+    }
 
   private:
     unsigned long long _number, _numerator, _denominator;
     bool _sign;
 };
-
-constexpr int
-cmp(const Fraction& a, const Fraction& b) {
-    if (a._sign and not b._sign) {
-        return -1;
-    }
-    if (not a._sign and b._sign) {
-        return 1;
-    }
-    if (a._number < b._number) {
-        return -1;
-    }
-    if (a._number > b._number) {
-        return 1;
-    }
-    unsigned long long denominator = std::lcm(a._denominator, b._denominator);
-    unsigned long long a_numerator = a._numerator * (denominator / a._denominator);
-    unsigned long long b_numerator = b._numerator * (denominator / b._denominator);
-    if (a_numerator < b_numerator) {
-        return -1;
-    }
-    if (a_numerator > b_numerator) {
-        return 1;
-    }
-    return 0;
-}
-
-template <typename I>
-constexpr int
-cmp(const Fraction& a, const I& b) {
-    if (a._sign and b > 0) {
-        return -1;
-    }
-    if (not a._sign and b < 0) {
-        return 1;
-    }
-    unsigned long long a_int = a._number;
-    unsigned long long b_int = b;
-    if (a_int < b_int) {
-        return -1;
-    }
-    if (a_int > b_int) {
-        return 1;
-    }
-    if (a._numerator != 0) {
-        return 1;
-    }
-    return 0;
-}
-
-template <typename I>
-constexpr int
-cmp(const I& b, const Fraction& a) {
-    return cmp(a, b);
-}
 
 } // namespace fraction

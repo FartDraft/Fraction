@@ -210,14 +210,7 @@ TEST(Cast, Bool0) {
 }
 
 TEST(Cast, BoolFractionOnly) {
-    Fraction a(0, 1, 3);
-    bool b = a;
-
-    ASSERT_EQ(b, true);
-}
-
-TEST(Cast, BoolNumberOnly) {
-    Fraction a(3);
+    Fraction a(0, 1, 10);
     bool b = a;
 
     ASSERT_EQ(b, true);
@@ -227,14 +220,7 @@ TEST(Cast, BoolOperator) {
     Fraction a(3);
     Fraction b(0);
 
-    ASSERT_EQ(a and b, false);
-}
-
-TEST(Cast, Int) {
-    Fraction a(5);
-    unsigned long long b = a;
-
-    ASSERT_EQ(b, 5);
+    ASSERT_EQ(a and not b, true);
 }
 
 TEST(Cast, Double) {
@@ -244,25 +230,36 @@ TEST(Cast, Double) {
     ASSERT_EQ(b, -3.15);
 }
 
-TEST(Cast, StringFull) {
-    Fraction a("3 3/15");
+TEST(Cast, String) {
+    Fraction a("-3 3/15");
     std::string b = a;
 
-    ASSERT_EQ(b, "3 1/5");
+    ASSERT_EQ(b, "-3 1/5");
 }
 
-TEST(Cast, StringOnlyFraction) {
-    Fraction a("-3/15");
-    std::string b = a;
+// Assign
+TEST(Assignment, Fraction) {
+    Fraction a("-3/5");
+    Fraction b;
+    b = a;
 
-    ASSERT_EQ(b, "-1/5");
+    ASSERT_EQ(a == b, true);
 }
 
-TEST(Cast, StringOnlyNumber) {
-    Fraction a("-3");
-    std::string b = a;
+TEST(Assignment, Double) {
+    double a = 3.14;
+    Fraction b;
+    b = a;
 
-    ASSERT_EQ(b, "-3");
+    ASSERT_EQ(a == double(b), true);
+}
+
+TEST(Assignment, String) {
+    std::string a = "3 7/50";
+    Fraction b;
+    b = a;
+
+    ASSERT_EQ(a == std::string(b), true);
 }
 
 int
