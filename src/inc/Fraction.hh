@@ -11,21 +11,21 @@ namespace fraction {
 class Fraction {
   public:
     // Constructors
-    explicit Fraction() : _number(0llU), _numerator(0llU), _denominator(1llU), _sign(false) {}
+    Fraction() : _number(0llU), _numerator(0llU), _denominator(1llU), _sign(false) {}
 
-    explicit Fraction(const Fraction& fraction)
+    Fraction(const Fraction& fraction)
         : _number(fraction._number), _numerator(fraction._numerator), _denominator(fraction._denominator),
           _sign(fraction._sign) {}
 
-    explicit Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
-                      bool sign = false) {
+    Fraction(unsigned long long number, unsigned long long numerator, unsigned long long denominator,
+             bool sign = false) {
         this->assign(number, numerator, denominator, sign);
     }
 
-    explicit Fraction(double fraction, double err = 1e-10) { this->from_double(fraction, err); }
+    Fraction(double fraction, double err = 1e-10) { this->from_double(fraction, err); }
 
     // Pattern: r"([+-])?(?:(?:(\d+) (\d+)\/(\d+))|(?:(\d+)\/(\d+))|(\d+)|(\d*\.\d*))"
-    explicit Fraction(const std::string& fraction) { this->from_string(fraction); }
+    Fraction(const std::string& fraction) { this->from_string(fraction); }
 
     // Setters
     constexpr const Fraction&
@@ -69,7 +69,8 @@ class Fraction {
 
     operator std::string() const {
         // Pattern: r"-?(\d+ \d+/\d+|\d+/\d+|\d+)"
-        return (this->_sign ? "-" : "") + (this->_number == 0 ? "" : std::to_string(this->_number))
+        return (this->_sign ? "-" : "") + std::basic_string(this->_number == 0 and this->_numerator == 0 ? "0" : "")
+               + (this->_number == 0 ? "" : std::to_string(this->_number))
                + (this->_number == 0 or this->_numerator == 0 ? "" : " ")
                + (this->_numerator == 0 ? ""
                                         : std::to_string(this->_numerator) + "/" + std::to_string(this->_denominator));
@@ -104,6 +105,46 @@ class Fraction {
         is >> input;
         obj.from_string(input);
         return is;
+    }
+
+    // Increment and decrement
+    Fraction&
+    operator++() {
+        if (this->_sign and --this->_number == 0) {
+            this->_sign = false;
+        } else {
+            ++this->_number;
+        }
+        return *this;
+    }
+
+    Fraction
+    operator++(int) {
+        Fraction old(*this);
+        operator++();
+        return old;
+    }
+
+    Fraction&
+    operator--() {
+        if (not this->_sign) {
+            if (this->_number == 0) {
+                this->_number = 1;
+                this->_sign = true;
+            } else if (--this->_number == 0) {
+                this->_sign = true;
+            }
+        } else {
+            ++this->_number;
+        }
+        return *this;
+    }
+
+    Fraction
+    operator--(int) {
+        Fraction old(*this);
+        operator--();
+        return old;
     }
 
     // Comparison Fraction
