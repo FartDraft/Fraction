@@ -3,26 +3,7 @@
 using namespace fraction;
 
 const Fraction&
-Fraction::assign(unsigned long long number, unsigned long long numerator, unsigned long long denominator, bool sign) {
-    if (denominator == 0llU) {
-        std::cerr << __PRETTY_FUNCTION__ << " : denominator may not be 0!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    this->_sign = sign;
-    if (numerator >= denominator) {
-        number += numerator / denominator;
-        numerator %= denominator;
-    }
-    this->_number = number;
-    unsigned long long gcd_ = std::gcd(numerator, denominator);
-    this->_numerator = numerator / gcd_;
-    this->_denominator = denominator / gcd_;
-
-    return *this;
-}
-
-const Fraction&
-Fraction::from_double(double fraction, double err) {
+Fraction::assign(double fraction, double err) {
     unsigned long long numerator, denominator;
     double sign = fraction < 0 ? -1.0 : 1.0, g = std::abs(fraction);
     unsigned long long s, a = 0, b = 1, c = 1, d = 0;
@@ -47,7 +28,7 @@ Fraction::from_double(double fraction, double err) {
 }
 
 const Fraction&
-Fraction::from_string(const std::string& fraction) {
+Fraction::assign(const std::string& fraction) {
     // Default values
     unsigned long long number = 0llU, numerator = 0llU, denominator = 1llU;
     bool sign = false;
@@ -130,7 +111,7 @@ Fraction::from_string(const std::string& fraction) {
     if (real == -1.0) {
         this->assign(number, numerator, denominator, sign);
     } else {
-        this->from_double(real);
+        this->assign(real);
     }
 
     pcre2_match_data_free(match_data);
