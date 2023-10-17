@@ -52,8 +52,13 @@ class Fraction {
         }
         this->_number = number;
         this->_numerator = numerator;
-        this->_denominator = denominator;
-        this->_sign = sign;
+        if (number == 0 and numerator == 0) {
+            this->_denominator = 1;
+            this->_sign = false;
+        } else {
+            this->_denominator = denominator;
+            this->_sign = sign;
+        }
         return reduce(*this);
     }
 
@@ -115,8 +120,10 @@ class Fraction {
 
     inline Fraction&
     operator++() {
-        if (this->_sign and --this->_number == 0) {
+        if (this->_sign and this->_number-- == 0) {
             this->_sign = false;
+            this->_number = 0;
+            this->_numerator = this->_denominator - this->_numerator;
         } else {
             ++this->_number;
         }
@@ -133,8 +140,9 @@ class Fraction {
     inline Fraction&
     operator--() {
         if (not this->_sign and this->_number-- == 0) {
-            this->_number = 1;
             this->_sign = true;
+            this->_number = 0;
+            this->_numerator = this->_denominator - this->_numerator;
         } else {
             ++this->_number;
         }
@@ -143,10 +151,74 @@ class Fraction {
 
     inline Fraction
     operator--(int) {
-
         Fraction old(*this);
         operator--();
         return old;
+    }
+
+    friend inline Fraction
+    operator+(const Fraction& lhs, const Fraction& rhs) {
+        Fraction result;
+        result._sign = lhs._sign;
+        result._number = lhs._number;
+        result._denominator = std::lcm(lhs._denominator, rhs._denominator);
+        result._numerator = lhs._numerator * result._denominator / lhs._denominator;
+        unsigned long long rhs_numerator = rhs._numerator * (result._denominator / rhs._denominator);
+        if (lhs._sign == rhs._sign) {
+            result._number += rhs._number;
+            result._numerator += rhs_numerator;
+        } else if (lhs._number >= rhs._number) {
+            result._number -= rhs._number;
+            if (result._numerator >= rhs_numerator) {
+                result._numerator -= rhs_numerator;
+                if (result._number == 0 and result._numerator == 0) {
+                    result._sign = false;
+                    result._denominator = 1;
+                    return result;
+                }
+            } else if (result._number-- == 0) {
+                result._sign = rhs._sign;
+                result._number = 0;
+                result._numerator = rhs_numerator - result._numerator;
+            } else {
+                result._numerator += result._denominator - rhs_numerator;
+            }
+        } else {
+            result._number = rhs._number - result._number;
+            result._sign = rhs._sign;
+            if (rhs_numerator >= result._numerator) {
+                result._numerator = rhs_numerator - result._numerator;
+            } else {
+                --result._number;
+                result._numerator += rhs_numerator;
+            }
+        }
+        return reduce(result);
+    }
+
+    friend inline Fraction
+    operator-(const Fraction& lhs, const Fraction& rhs) {
+        return lhs + Fraction(rhs._number, rhs._numerator, rhs._denominator, rhs._sign ^ true);
+    }
+
+    friend inline Fraction
+    operator*(const Fraction& lhs, const Fraction& rhs) {
+        Fraction a(0, rhs._number * lhs._numerator, lhs._denominator);
+        Fraction b(0, lhs._number * rhs._numerator, rhs._denominator);
+        Fraction c(0, lhs._numerator * rhs._numerator, lhs._denominator * rhs._denominator);
+        Fraction result = a + b + c;
+        result._number += lhs._number * rhs._number;
+        result._sign = lhs._sign ^ rhs._sign;
+        return result;
+    }
+
+    friend inline Fraction
+    operator/(const Fraction& lhs, const Fraction& rhs) {
+        if (rhs == 0) {
+            std::cerr << __PRETTY_FUNCTION__ << " : division by 0!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        return lhs * Fraction(rhs._number, rhs._denominator, rhs._numerator, rhs._sign);
     }
 
     // Comparison Fraction
@@ -210,8 +282,7 @@ class Fraction {
     template <typename T>
     friend inline int
     cmp(const Fraction& a, const T& b) {
-        Fraction tmp(b);
-        return cmp(a, tmp);
+        return cmp(a, Fraction(b));
     }
 
     template <typename T>
@@ -316,7 +387,7 @@ class Fraction {
     unsigned long long _number, _numerator, _denominator;
     bool _sign;
 
-    inline friend const Fraction&
+    constexpr friend const Fraction&
     reduce(Fraction& fraction) {
         if (fraction._numerator >= fraction._denominator) {
             fraction._number += fraction._numerator / fraction._denominator;
@@ -325,7 +396,6 @@ class Fraction {
         unsigned long long gcd_ = std::gcd(fraction._numerator, fraction._denominator);
         fraction._numerator = fraction._numerator / gcd_;
         fraction._denominator = fraction._denominator / gcd_;
-
         return fraction;
     }
 };
