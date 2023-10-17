@@ -104,3 +104,17 @@ TEST(MinusFraction, NegPos) {
 
     ASSERT_EQ(a - b == -1.45, true);
 }
+
+TEST(Plus, _) {
+    Fraction a(0.5);
+    Fraction b("1/2");
+
+    ASSERT_EQ(a + b == 1, true);
+}
+
+TEST(Minus, _) {
+    Fraction a(1.2);
+    Fraction b("1/5");
+
+    ASSERT_EQ(a - b == 1, true);
+}

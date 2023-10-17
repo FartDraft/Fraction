@@ -51,3 +51,17 @@ TEST(DivFraction, _) {
 
     ASSERT_EQ(a / b == -7, true);
 }
+
+TEST(Mul, _) {
+    Fraction a(0.5);
+    Fraction b("1/2");
+
+    ASSERT_EQ(a * b == 0.25, true);
+}
+
+TEST(Div, _) {
+    Fraction a(1.2);
+    Fraction b("1/5");
+
+    ASSERT_EQ(a / b == 6, true);
+}

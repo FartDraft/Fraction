@@ -221,6 +221,54 @@ class Fraction {
         return lhs * Fraction(rhs._number, rhs._denominator, rhs._numerator, rhs._sign);
     }
 
+    template <typename T>
+    friend inline Fraction
+    operator+(const Fraction& lhs, const T& rhs) {
+        return lhs + Fraction(rhs);
+    }
+
+    template <typename T>
+    friend inline Fraction
+    operator+(const T& rhs, const Fraction& lhs) {
+        return lhs + Fraction(rhs);
+    }
+
+    template <typename T>
+    friend inline Fraction
+    operator-(const Fraction& lhs, const T& rhs) {
+        return lhs - Fraction(rhs);
+    }
+
+    template <typename T>
+    friend inline Fraction
+    operator-(const T& rhs, const Fraction& lhs) {
+        return lhs - Fraction(rhs);
+    }
+
+    template <typename T>
+    friend inline Fraction
+    operator*(const Fraction& lhs, const T& rhs) {
+        return lhs * Fraction(rhs);
+    }
+
+    template <typename T>
+    friend inline Fraction
+    operator*(const T& rhs, const Fraction& lhs) {
+        return lhs * Fraction(rhs);
+    }
+
+    template <typename T>
+    friend inline Fraction
+    operator/(const Fraction& lhs, const T& rhs) {
+        return lhs / Fraction(rhs);
+    }
+
+    template <typename T>
+    friend inline Fraction
+    operator/(const T& rhs, const Fraction& lhs) {
+        return lhs / Fraction(rhs);
+    }
+
     // Comparison Fraction
     friend constexpr int
     cmp(const Fraction& a, const Fraction& b) {
