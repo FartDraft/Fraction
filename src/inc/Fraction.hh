@@ -26,6 +26,37 @@ class Fraction {
     // Pattern: r"([+-])?(?:(?:(\d+) (\d+)\/(\d+))|(?:(\d+)\/(\d+))|(\d+)|(\d*\.\d*))"
     Fraction(const std::string& fraction) { this->assign(fraction); }
 
+    inline const Fraction&
+    limit_denominator(unsigned long long limit = 1e10) {
+        if (limit == 0llU) {
+            std::cerr << __PRETTY_FUNCTION__ << " : limit of denominator should be at least 1!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        if (this->_denominator > limit) {
+            unsigned long long a, q2, tmp, k, p0 = 0, q0 = 1, p1 = 1, q1 = 0, n = this->_numerator,
+                                              d = this->_denominator;
+            while ((q2 = q0 + (a = n / d) * q1) <= limit) {
+                tmp = p0;
+                p0 = p1;
+                q0 = q1;
+                p1 = tmp + a * p1;
+                q1 = q2;
+                tmp = n;
+                n = d;
+                d = tmp - a * d;
+            }
+            k = (limit - q0) / q1;
+            if (2 * d * (q0 + k * q1) <= this->_denominator) {
+                this->_numerator = p1;
+                this->_denominator = q1;
+            } else {
+                this->_numerator = p0 + k * p1;
+                this->_denominator = q0 + k * q1;
+            }
+        }
+        return *this;
+    }
+
     constexpr const Fraction&
     assign() {
         this->_sign = false;
@@ -52,7 +83,7 @@ class Fraction {
         }
         this->_number = number;
         this->_numerator = numerator;
-        if (number == 0 and numerator == 0) {
+        if (number == 0llU and numerator == 0llU) {
             this->_denominator = 1;
             this->_sign = false;
         } else {
@@ -80,11 +111,13 @@ class Fraction {
 
     // Pattern: r"-?(\d+ \d+/\d+|\d+/\d+|\d+)"
     operator std::string() const {
-        return (this->_sign ? "-" : "") + std::basic_string(this->_number == 0 and this->_numerator == 0 ? "0" : "")
-               + (this->_number == 0 ? "" : std::to_string(this->_number))
-               + (this->_number == 0 or this->_numerator == 0 ? "" : " ")
-               + (this->_numerator == 0 ? ""
-                                        : std::to_string(this->_numerator) + "/" + std::to_string(this->_denominator));
+        return (this->_sign ? "-" : "")
+               + std::basic_string(this->_number == 0llU and this->_numerator == 0llU ? "0" : "")
+               + (this->_number == 0llU ? "" : std::to_string(this->_number))
+               + (this->_number == 0llU or this->_numerator == 0llU ? "" : " ")
+               + (this->_numerator == 0llU
+                      ? ""
+                      : std::to_string(this->_numerator) + "/" + std::to_string(this->_denominator));
     }
 
     Fraction& operator=(const Fraction& other) = default;
@@ -120,7 +153,7 @@ class Fraction {
 
     inline Fraction&
     operator++() {
-        if (this->_sign and this->_number-- == 0) {
+        if (this->_sign and this->_number-- == 0llU) {
             this->_sign = false;
             this->_number = 0;
             this->_numerator = this->_denominator - this->_numerator;
@@ -139,7 +172,7 @@ class Fraction {
 
     inline Fraction&
     operator--() {
-        if (not this->_sign and this->_number-- == 0) {
+        if (not this->_sign and this->_number-- == 0llU) {
             this->_sign = true;
             this->_number = 0;
             this->_numerator = this->_denominator - this->_numerator;
@@ -171,12 +204,12 @@ class Fraction {
             result._number -= rhs._number;
             if (result._numerator >= rhs_numerator) {
                 result._numerator -= rhs_numerator;
-                if (result._number == 0 and result._numerator == 0) {
+                if (result._number == 0llU and result._numerator == 0llU) {
                     result._sign = false;
                     result._denominator = 1;
                     return result;
                 }
-            } else if (result._number-- == 0) {
+            } else if (result._number-- == 0llU) {
                 result._sign = rhs._sign;
                 result._number = 0;
                 result._numerator = rhs_numerator - result._numerator;
@@ -214,7 +247,7 @@ class Fraction {
 
     friend inline Fraction
     operator/(const Fraction& lhs, const Fraction& rhs) {
-        if (rhs == 0) {
+        if (rhs == 0llU) {
             std::cerr << __PRETTY_FUNCTION__ << " : division by 0!" << std::endl;
             exit(EXIT_FAILURE);
         }

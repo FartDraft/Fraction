@@ -28,8 +28,8 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -r $(BUILD_DIR)
-	rm $(VALGRIND_FILE)
+	rm -rf $(BUILD_DIR)
+	rm -f $(VALGRIND_FILE)
 
 run:
 	@$(BUILD_DIR)/$(TARGET_EXEC)
