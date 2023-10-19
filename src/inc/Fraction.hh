@@ -302,6 +302,30 @@ class Fraction {
         return lhs / Fraction(rhs);
     }
 
+    template <typename T>
+    inline Fraction&
+    operator+=(const T& fraction) {
+        return *this = *this + fraction;
+    }
+
+    template <typename T>
+    inline Fraction&
+    operator-=(const T& fraction) {
+        return *this = *this - fraction;
+    }
+
+    template <typename T>
+    inline Fraction&
+    operator*=(const T& fraction) {
+        return *this = *this * fraction;
+    }
+
+    template <typename T>
+    inline Fraction&
+    operator/=(const T& fraction) {
+        return *this = *this / fraction;
+    }
+
     // Comparison Fraction
     friend constexpr int
     cmp(const Fraction& a, const Fraction& b) {

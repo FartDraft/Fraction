@@ -55,3 +55,10 @@ TEST(CmpString, Equal) {
 
     ASSERT_EQ(cmp(a, "-17/10"), 0);
 }
+
+TEST(Greater, _) {
+    Fraction a("1/7");
+    Fraction b("1/8");
+
+    ASSERT_EQ(a > b, true);
+}
